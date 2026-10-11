@@ -161,6 +161,7 @@ td.num{white-space:nowrap}
 .ag .an{font-weight:700;font-size:15px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
 .ag .ah{font-family:var(--f-num);font-size:24px;font-weight:700;line-height:1.1}
 .ag .ah small{font-size:13px;font-weight:500;color:var(--muted);margin-left:2px}
+.ag .ah small.pre{margin-left:0;margin-right:6px;font-family:var(--f-body)}
 .ag .am{font-size:12.5px;color:var(--muted);line-height:1.5}
 .ag .am b{color:var(--ink);font-family:var(--f-num)}
 .ag .ap{margin-top:auto;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:10px;padding:5px 8px}
@@ -387,10 +388,28 @@ function renderHome(){
     </button>`}).join('');
   mgrs.querySelectorAll('.mc').forEach(b=>b.onclick=()=>openMgr(b.dataset.m));
 }
-function openMgr(name){sel=name;filt='all';target=null;document.getElementById('q').value='';
+function openMgr(name){pushNav();sel=name;filt='all';target=null;document.getElementById('q').value='';
   home.hidden=true;detail.hidden=false;dTitle.textContent=name;renderMgr();window.scrollTo(0,0);}
 function goHome(){detail.hidden=true;home.hidden=false;renderHome();window.scrollTo(0,0);}
-backBtn.onclick=goHome;
+// ---- 화면 이동 기록 (뒤로가기 = 직전 화면) ----
+const NAV=[]; const STANDALONE=(()=>{try{return window.top===window}catch(e){return false}})();
+const snap=()=>({home:!home.hidden,sel,view,agSel,y:window.scrollY});
+let histOK=false;
+function pushNav(){NAV.push(snap());if(STANDALONE){try{history.pushState({n:NAV.length},'');histOK=true}catch(e){histOK=false}}}
+function restore(s){
+  if(s.home){detail.hidden=true;home.hidden=false;renderHome();}
+  else{ if(s.sel!==sel){target=null;filt='all';document.getElementById('q').value='';}
+    sel=s.sel;home.hidden=true;detail.hidden=false;dTitle.textContent=sel;renderMgr();
+    setView(s.view); if(s.agSel){agSel=s.agSel;renderAgencies();} }
+  requestAnimationFrame(()=>window.scrollTo(0,s.y||0));
+}
+function navBack(){
+  if(!NAV.length){goHome();return}
+  if(histOK){history.back();return}   // popstate가 직전 화면을 복원
+  restore(NAV.pop());
+}
+window.addEventListener('popstate',()=>{const s=NAV.pop();if(s)restore(s);});
+backBtn.onclick=()=>navBack();
 function renderSummary(){
   const o=curM();
   if(!target||target.h<=o.h) target=o.next;
@@ -470,7 +489,7 @@ function renderTable(){
 let view='A', agSel=null;
 function setView(v){view=v;agSel=null;tabA.setAttribute('aria-selected',v==='A');tabB.setAttribute('aria-selected',v==='B');
   viewA.hidden=v!=='A';viewB.hidden=v!=='B';if(v==='B')renderAgencies();}
-tabA.onclick=()=>setView('A'); tabB.onclick=()=>setView('B');
+tabA.onclick=()=>{if(view!=='A'||agSel){pushNav();setView('A')}}; tabB.onclick=()=>{if(view!=='B'){pushNav();setView('B')}};
 function agencies(o){
   const map={};
   o.all.forEach(a=>{const g=(map[a.br]??={name:a.br||'(지사 미상)',h:0,n:0,act:0,cands:[],maxed:[]});g.n++;g.h+=conv(a.amt);if(a.amt>0)g.act++;if(a.amt>=200000)g.maxed.push(a.ag)});
@@ -493,24 +512,24 @@ function renderAgencies(){
     const g=A.find(x=>x.name===agSel); if(!g){agSel=null;return renderAgencies();}
     viewB.innerHTML=`<button class="btn agback" id="agBack" type="button">‹ 대리점 목록</button>
       <section class="card"><h3>${g.name}</h3>
-      <p class="plan-sum">설계사 ${g.n}명 · 현재 <b>${fmtH(g.h)}명</b> · 전원 1건씩 체결 시 <b>+${fmtH(g.gain)}명</b></p>
+      <p class="plan-sum">설계의뢰 ${g.n}명 · 현재 <b>${fmtH(g.h)}명</b> · 전원 1건씩 체결 시 <b>+${fmtH(g.gain)}명</b></p>
       ${g.cands.length?`<div class="aglist">${g.cands.map(agentCard).join('')}</div>`:'<p class="maxed">추가로 올릴 수 있는 설계사가 없어요.</p>'}
       ${g.maxed.length?`<p class="maxed">20만 이상 달성: ${g.maxed.join(', ')}</p>`:''}</section>`;
-    agBack.onclick=()=>{agSel=null;renderAgencies();window.scrollTo(0,0)};
+    agBack.onclick=()=>navBack();
     viewB.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{if(c.checked)done[c.dataset.c]=1;else delete done[c.dataset.c];store.set('touchDone',done);renderAgencies();renderPlan();renderTable()});
     return;
   }
   viewB.innerHTML=`<div class="sec-head"><h2>대리점 ${A.length}곳</h2><span>최우선 많은 순</span></div>
     <div class="ags">${A.map(g=>`<button class="ag" type="button" data-g="${g.name.replace(/"/g,'&quot;')}">
       <span class="an">${g.name}</span>
-      <span class="ah">${fmtH(g.h)}<small>명</small></span>
-      <span class="am">설계사 <b>${g.n}</b>명 · 유실적 <b>${g.act}</b>명<br>최우선 <b>${g.top}</b>명 · 미체결 <b>${g.unc}</b>명</span>
+      <span class="ah"><small class="pre">현재 환산인원</small>${fmtH(g.h)}<small>명</small></span>
+      <span class="am">설계의뢰 <b>${g.n}</b>명 · 유실적 <b>${g.act}</b>명<br>최우선 <b>${g.top}</b>명 · 미체결 <b>${g.unc}</b>명</span>
       <span class="ap">${g.cands.length?`1건씩 체결 시 +${fmtH(g.gain)}명`:'추가 대상 없음'}</span>
     </button>`).join('')}</div>`;
-  viewB.querySelectorAll('.ag').forEach(b=>b.onclick=()=>{agSel=b.dataset.g;renderAgencies();window.scrollTo(0,0)});
+  viewB.querySelectorAll('.ag').forEach(b=>b.onclick=()=>{pushNav();agSel=b.dataset.g;renderAgencies();window.scrollTo(0,0)});
 }
 function renderMgr(){renderSummary();renderPlan();renderChips();renderTable();setView('A')}
-function renderAll(){C=compute();
+function renderAll(){C=compute();NAV.length=0;
   if(!C.mgrs.length){detail.hidden=true;home.hidden=false;mgrs.innerHTML='<p class="plan-sum">상단 <b>새 실적파일 불러오기</b>로 실적 엑셀을 열어 주세요.</p>';
     srcInfo.textContent='실적파일을 불러와 주세요';return}
   srcInfo.textContent=`${DATA.src||'업로드 파일'} · 매니저 ${C.mgrs.length}명 · 설계사 ${activeRows().length.toLocaleString()}명`;
