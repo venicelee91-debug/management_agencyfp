@@ -117,6 +117,10 @@ tr.done td{color:var(--done)} tr.done .tag,tr.done .pri{opacity:.5}
 <style>
 .cmt{min-width:0!important;white-space:nowrap;font-size:13px;color:var(--muted)}
 td.num{white-space:nowrap}
+.hl{background:var(--accent-soft);color:var(--accent);font-weight:700;border-radius:4px;padding:0 4px}
+.fromto{font-size:12px;color:var(--muted);font-family:var(--f-num);white-space:nowrap}
+.calc{font-size:14px;font-family:var(--f-num);background:var(--bg);border-radius:6px;padding:6px 8px}
+.calc b{color:var(--ink)}
 .gain{font-weight:700;color:var(--accent);white-space:nowrap}
 .low{color:var(--muted)}
 .plan-sum{font-size:16px;margin:0}
@@ -239,10 +243,18 @@ function candidate(m,br,ag,code,amt,cnt,avgP,pend){
   const ease=amt<=0?1:gap<MIN_PREM?0.4:gap<=50000?1:gap<=100000?0.8:0.6;
   const score=gain*act*track*ease;
   const pri=score>=0.6?1:score>=0.35?2:3;
-  return {m,br,ag,code,amt,cnt,avgP,pend,t,gap,next,gain,lowGap,score,pri,cmt:comment(avgP,pend)};
+  return {m,br,ag,code,amt,cnt,avgP,pend,t,gap,next,gain,lowGap,score,pri,P,after:amt+P,from:conv(amt),to:conv(amt+P),cmt:comment(avgP,pend)};
 }
+const man=n=>`${(n/10000).toFixed(1).replace(/\.0$/,'')}만`;
+function calcLine(p){
+  const add=p.avgP&&p.P===p.avgP?`<mark class="hl">건당 ${man(p.P)}</mark>`:`<mark class="hl">${man(p.P)}</mark>`;
+  return p.amt>0
+    ? `${man(p.amt)} + ${add} = <b>${man(p.after)}</b> → ${fmtH(p.from)}명 ▸ <b>${fmtH(p.to)}명</b>`
+    : `실적 0 + ${add} = <b>${man(p.after)}</b> → 0명 ▸ <b>${fmtH(p.to)}명</b>`;
+}
+const gainCell=p=>`<span class="gain">+${fmtH(p.gain)}명</span><div class="fromto">${fmtH(p.from)}→${fmtH(p.to)}명</div>`;
 function comment(avgP,pend){
-  return `진행 ${pend}건 · 건당 ${avgP?'약 '+wonR(avgP):'-'}`;
+  return `진행 ${pend}건 · <mark class="hl">건당 ${avgP?'약 '+wonR(avgP):'-'}</mark>`;
 }
 
 function compute(){
@@ -321,14 +333,15 @@ function renderPlan(){
         <td class="r num">${p.amt>0?won(p.gap):'첫 체결'}</td>
         <td class="r num">${p.cnt}</td>
         <td class="r num">${p.avgP?wonR(p.avgP):'-'}</td>
-        <td class="r gain">+${fmtH(p.gain)}명</td>
+        <td class="r">${gainCell(p)}</td>
         <td class="cmt">${p.cmt}</td>
         <td class="r num cum">${fmtH(cum)}명</td></tr>`).join('')}</tbody></table></div>
     <div class="cards">${rows.map(({p,i,cum})=>`<div class="pc ${done[p.code]?'done':''}">
         <div class="top"><span class="agent">${i+1}. ${p.ag}</span><span class="gain">+${fmtH(p.gain)}명 → ${fmtH(cum)}명</span></div>
         <div class="meta">${p.br}</div>
         <div class="meta">${p.amt>0?`실적 ${won(p.amt)} · 남은 ${won(p.gap)}`:'미체결'} · 설계 ${p.cnt}건</div>
-        <div class="cmt">${p.cmt}</div></div>`).join('')}</div>`:''}`;
+        <div class="calc">${calcLine(p)}</div>
+        <div class="meta">진행 설계 ${p.pend}건</div></div>`).join('')}</div>`:''}`;
 }
 function renderChips(){
   const o=curM(); const cnt=TYPES.map(t=>o.cands.filter(x=>x.t===t.k).length);
@@ -354,7 +367,7 @@ function renderTable(){
       <td class="r num ${x.lowGap?'low':''}">${x.amt>0?won(x.gap):'첫 체결'}</td>
       <td class="r num">${x.cnt}</td>
       <td class="r num">${x.avgP?wonR(x.avgP):'-'}</td>
-      <td class="r gain">+${fmtH(x.gain)}명</td>
+      <td class="r">${gainCell(x)}</td>
       <td class="cmt">${x.cmt}</td></tr>`}).join('');
   tbody.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{
     if(c.checked)done[c.dataset.c]=1;else delete done[c.dataset.c];store.set('touchDone',done);renderTable();renderPlan()});
