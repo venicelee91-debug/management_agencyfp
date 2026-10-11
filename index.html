@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f4f7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="환산인원관리">
 <title>환산인원관리</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap">
@@ -115,6 +119,11 @@ tr.done td{color:var(--done)} tr.done .tag,tr.done .pri{opacity:.5}
 </style>
 
 <style>
+:root{--hero:#2f4bd8;--hero-ink:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hero:#2a3a9e;--hero-ink:#ffffff}}
+:root[data-theme="dark"]{--hero:#2a3a9e;--hero-ink:#ffffff}
+@media (max-width:640px){.headrow h2{display:none}.headrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.kv strong{font-size:19px}}
+.calc b{white-space:nowrap}
 .cmt{min-width:0!important;white-space:nowrap;font-size:13px;color:var(--muted)}
 td.num{white-space:nowrap}
 .hl{background:var(--accent-soft);color:var(--accent);font-weight:700;border-radius:4px;padding:0 4px}
@@ -145,6 +154,48 @@ td.num{white-space:nowrap}
 .detail-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .back{display:inline-flex;align-items:center;gap:4px}
 .single{display:grid;gap:16px;min-width:0}
+.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);padding-block:8px;margin-inline:-16px;padding-inline:16px}
+.appbar-title{min-width:0;display:grid}
+.appbar-title h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appbar-title p{margin:0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#detail .appbar-title{text-align:center;flex:1}
+#detail .appbar-title h1{font-size:18px}
+.iconbtn{all:unset;box-sizing:border-box;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--ink);background:var(--surface);border:1px solid var(--line);cursor:pointer;flex:none}
+.iconbtn:active{transform:scale(.94)}
+.iconbtn:focus-visible{outline:2px solid var(--accent)}
+.hero{background:var(--hero);color:var(--hero-ink);border-radius:20px;padding:18px;display:grid;gap:12px}
+.hero .lbl{font-size:13px;opacity:.85}
+.hero .big{font-family:var(--f-num);font-size:40px;font-weight:700;line-height:1}
+.hero .big small{font-size:18px;font-weight:500;margin-left:2px}
+.hero .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hero .st{background:rgba(255,255,255,.14);border-radius:12px;padding:8px 10px;display:grid}
+.hero .st span{font-size:12px;opacity:.85}
+.hero .st b{font-family:var(--f-num);font-size:18px}
+.crit{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
+.crit::-webkit-scrollbar{display:none}
+.crit span{flex:none;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted)}
+.crit b{color:var(--ink);font-family:var(--f-num)}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline}
+.sec-head h2{margin:0;font-size:17px}
+.sec-head span{font-size:12.5px;color:var(--muted)}
+.mgrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:10px}
+.mc{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:4px 12px;align-items:center;transition:transform .12s}
+.mc:active{transform:scale(.98)}
+.mc:hover{border-color:var(--accent)}
+.mc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.av{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:700;font-size:17px;background:var(--bg);color:var(--muted);grid-row:span 2}
+.av.on{background:var(--accent-soft);color:var(--accent)}
+.mc .nm{white-space:nowrap;font-size:17px;font-weight:700;display:flex;gap:6px;align-items:center;min-width:0}
+.badge{white-space:nowrap;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--accent);color:var(--surface)}
+.mc .sub2{font-size:13px;color:var(--muted);min-width:0}
+.mc .sub2 b{color:var(--ink);font-family:var(--f-num)}
+.mc .rt{grid-row:span 2;display:flex;align-items:center;gap:4px}
+.mc .hh{font-family:var(--f-num);font-size:24px;font-weight:700}
+.mc .hh small{font-size:13px;font-weight:500;color:var(--muted)}
+.chev{color:var(--muted)}
+.mc .bar{grid-column:1/-1;height:6px;margin-top:6px}
+.mc .go{grid-column:1/-1;font-size:13px;color:var(--accent);font-weight:500;background:var(--accent-soft);border-radius:10px;padding:6px 10px}
+@media (prefers-reduced-motion:reduce){.mc,.iconbtn{transition:none}.mc:active,.iconbtn:active{transform:none}}
 .cards{display:none}
 @media (max-width:640px){
   .plan-tbl{display:none}
@@ -159,28 +210,31 @@ td.num{white-space:nowrap}
 <body>
 <div class="wrap">
   <section id="home" class="single">
-    <header class="top">
-      <div class="home-hero">
+    <header class="appbar">
+      <div class="appbar-title">
         <h1>환산인원관리</h1>
         <p id="srcInfo">유실적현황 기준</p>
       </div>
-      <div class="toolbar">
-        <input type="file" id="file" accept=".xlsx,.xlsm,.xls" hidden>
-        <button class="btn" id="uploadBtn" type="button">새 실적파일 불러오기</button>
-        <span class="status" id="stat"></span>
-      </div>
+      <input type="file" id="file" accept=".xlsx,.xlsm,.xls" hidden>
+      <button class="iconbtn" id="uploadBtn" type="button" aria-label="새 실적파일 불러오기" title="새 실적파일 불러오기">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </header>
-    <section class="rule" aria-label="환산 기준">
-      <div class="bands"><span>5만↓ <b>0.5명</b></span><span>5만~10만 <b>1명</b></span><span>10만~20만 <b>1.5명</b></span><span>20만↑ <b>2명</b></span></div>
-      <p>매니저 카드를 누르면 그 매니저의 베스트 플랜과 터치 대상을 볼 수 있어요.</p>
-    </section>
+    <p class="status" id="stat" hidden></p>
+    <section class="hero" id="hero"></section>
+    <div class="crit" aria-label="환산 기준"><span>5만↓ <b>0.5</b></span><span>5~10만 <b>1</b></span><span>10~20만 <b>1.5</b></span><span>20만↑ <b>2명</b></span></div>
+    <div class="sec-head"><h2>매니저</h2><span>환산인원 순</span></div>
     <div class="mgrs" id="mgrs"></div>
   </section>
 
   <section id="detail" class="single" hidden>
-    <div class="detail-top">
-      <button class="btn back" id="backBtn" type="button">← 전체 매니저</button>
-    </div>
+    <header class="appbar">
+      <button class="iconbtn" id="backBtn" type="button" aria-label="전체 매니저로">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="appbar-title"><h1 id="dTitle">매니저</h1></div>
+      <span style="width:40px"></span>
+    </header>
     <section class="card" id="summary"></section>
     <section class="card" id="plan"></section>
     <section class="card">
@@ -280,20 +334,27 @@ const PN=['','최우선','우선','보통'];
 
 function renderHome(){
   const max=Math.max(...C.tiers.map(t=>t.h));
+  const total=C.mgrs.reduce((s,o)=>s+o.h,0), paid=C.mgrs.filter(o=>o.cur).length;
+  const topAll=C.mgrs.reduce((s,o)=>s+o.cands.filter(c=>c.pri===1).length,0);
+  hero.innerHTML=`<div class="lbl">지점 유실적 환산인원</div>
+    <div class="big">${fmtH(total)}<small>명</small></div>
+    <div class="stats"><div class="st"><span>매니저</span><b>${C.mgrs.length}명</b></div><div class="st"><span>지급구간 달성</span><b>${paid}명</b></div><div class="st"><span>최우선 터치</span><b>${topAll}명</b></div></div>`;
   mgrs.innerHTML=C.mgrs.map(o=>{
     const top=o.cands.filter(c=>c.pri===1).length;
     const diff=o.next?o.next.h-o.h:0; let s=0,n=0;
     if(o.next) for(const c of o.cands){if(s>=diff-1e-9)break;s+=c.gain;n++}
     return `<button class="mc" type="button" data-m="${o.name}">
-      <span class="row1"><span class="nm">${o.name}</span><span class="hh">${fmtH(o.h)}<small>명</small></span></span>
+      <span class="av ${o.cur?'on':''}">${o.name.slice(-2)}</span>
+      <span class="nm">${o.name}${o.cur?`<span class="badge">지급 ${o.cur.pay}</span>`:''}</span>
+      <span class="rt"><span class="hh">${fmtH(o.h)}<small>명</small></span><svg class="chev" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sub2">${o.next?`${o.next.h}명까지 <b>${fmtH(diff)}명</b>`:'최고 구간'} · 최우선 <b>${top}</b>명</span>
       <span class="bar"><i style="width:${Math.min(100,o.h/max*100)}%"></i></span>
-      <span class="meta"><span>지급 <b>${o.cur?o.cur.pay:0}</b></span>${o.next?`<span>${o.next.h}명까지 <b>${fmtH(diff)}명</b></span>`:'<span>최고 구간</span>'}<span>최우선 <b>${top}</b>명</span></span>
-      ${o.next?`<span class="go">${n}명 체결 시 ${o.next.h}명 달성 →</span>`:''}
+      ${o.next?`<span class="go">${n}명 체결하면 ${o.next.h}명 (지급 ${o.next.pay}) 달성</span>`:''}
     </button>`}).join('');
   mgrs.querySelectorAll('.mc').forEach(b=>b.onclick=()=>openMgr(b.dataset.m));
 }
 function openMgr(name){sel=name;filt='all';target=null;document.getElementById('q').value='';
-  home.hidden=true;detail.hidden=false;renderMgr();window.scrollTo(0,0);}
+  home.hidden=true;detail.hidden=false;dTitle.textContent=name;renderMgr();window.scrollTo(0,0);}
 function goHome(){detail.hidden=true;home.hidden=false;renderHome();window.scrollTo(0,0);}
 backBtn.onclick=goHome;
 function renderSummary(){
@@ -382,7 +443,7 @@ function renderAll(){C=compute();
 // ---- upload ----
 uploadBtn.onclick=()=>file.click();
 file.onchange=async()=>{
-  const f=file.files[0]; if(!f)return; stat.textContent='읽는 중…';
+  const f=file.files[0]; if(!f)return; stat.hidden=false;stat.textContent='읽는 중…';
   try{
     if(!window.XLSX) throw new Error('엑셀 읽기 도구를 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.');
     const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
