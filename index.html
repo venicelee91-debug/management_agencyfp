@@ -180,6 +180,8 @@ td.num{white-space:nowrap}
 .nowchip b{font-family:var(--f-num);color:var(--accent)}
 .bridge{display:inline-block;font-size:11.5px;font-weight:700;border-radius:5px;padding:0 6px;background:var(--brgs);color:var(--brg);white-space:nowrap;vertical-align:middle}
 .tbr{color:var(--brg);background:var(--brgs)}
+.rec{display:inline-grid;gap:3px;justify-items:start;vertical-align:top}
+.recline{display:flex;gap:8px;align-items:flex-start}
 .agq{font:inherit;width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px}
 .maxed{font-size:13px;color:var(--muted);margin:0}
 .agback{justify-self:start}
@@ -342,7 +344,7 @@ function candidate(m,br,ag,code,amt,cnt,avgP,pend,brg,bt){
   const track=amt>0?1:0.4;
   const ease=amt<=0?1:gap<MIN_PREM?0.4:gap<=50000?1:gap<=100000?0.8:0.6;
   const score=gain*act*track*ease;
-  const pri=score>=0.6?1:score>=0.35?2:3;
+  const pri=brg?1:score>=0.6?1:score>=0.35?2:3;
   return {m,br,ag,code,amt,cnt,avgP,pend,brg,bt,t,gap,next,gain,lowGap,score,pri,P,after:amt+P,from:conv(amt),to:conv(amt+P),cmt:comment(avgP,pend)};
 }
 const man=n=>`${(n/10000).toFixed(1).replace(/\.0$/,'')}만`;
@@ -367,7 +369,7 @@ function compute(){
     const cd=candidate(m,br,ag,code,amt,cnt,avgP||0,pend||0,!!brg,bt||''); if(cd) o.cands.push(cd);
   });
   Object.values(by).forEach(o=>{
-    o.cands.sort((a,b)=>b.score-a.score||b.gain-a.gain||b.pend-a.pend);
+    o.cands.sort((a,b)=>(b.brg-a.brg)||b.score-a.score||b.gain-a.gain||b.pend-a.pend);
     o.near=o.cands.filter(c=>c.t<4);
     o.cur=[...tiers].reverse().find(t=>o.h>=t.h)||null;
     o.next=tiers.find(t=>t.h>o.h)||null;
@@ -452,10 +454,11 @@ function renderPlan(){
   const rows=picks.map((p,i)=>{cum+=p.gain;return {p,i,cum}});
   plan.innerHTML=`<h3>베스트 플랜 · ${target.h}명 (지급 ${target.pay})</h3>
     <p class="plan-sum">${fmtH(diff)}명 부족 → 아래 <b>${picks.length}명</b> 1건씩 체결 시 <b>+${fmtH(sum)}명</b>${short>1e-9?`<br><span class="warn">${fmtH(short)}명은 신규 가동 필요</span>`:''}</p>
-    ${picks.length?`<div class="tbl-wrap plan-tbl"><table><thead><tr><th class="c">순서</th><th>설계사</th><th class="r">현재 실적</th><th class="r">남은 금액</th><th class="r">전체설계</th><th class="r">건당 보험료</th><th class="r">체결 시</th><th>코멘트</th><th class="r">누적</th></tr></thead><tbody>${
+    ${picks.length?`<div class="tbl-wrap plan-tbl"><table><thead><tr><th class="c">순서</th><th>추천</th><th>설계사</th><th class="r">현재 실적</th><th class="r">남은 금액</th><th class="r">전체설계</th><th class="r">건당 보험료</th><th class="r">체결 시</th><th>코멘트</th><th class="r">누적</th></tr></thead><tbody>${
       rows.map(({p,i,cum})=>`<tr class="${done[p.code]?'done':''}">
         <td class="c num">${i+1}</td>
-        <td><div class="agent">${nameBtn(p)}${bBadge(p)}</div><div class="branch">${p.br}</div></td>
+        <td>${rec(p)}</td>
+        <td><div class="agent">${nameBtn(p)}</div><div class="branch">${p.br}</div></td>
         <td class="r num">${p.amt>0?won(p.amt):'-'}</td>
         <td class="r num">${p.amt>0?won(p.gap):'첫 체결'}</td>
         <td class="r num">${p.cnt}</td>
@@ -464,9 +467,9 @@ function renderPlan(){
         <td class="cmt">${p.cmt}</td>
         <td class="r num cum">${fmtH(cum)}명</td></tr>`).join('')}</tbody></table></div>
     <div class="cards">${rows.map(({p,i,cum})=>`<div class="pc ${done[p.code]?'done':''}">
-        <div class="top"><span class="agent">${i+1}. ${nameBtn(p)}${bBadge(p)}</span><span class="gain">+${fmtH(p.gain)}명 → ${fmtH(cum)}명</span></div>
+        <div class="top"><span class="agent">${i+1}. ${nameBtn(p)}</span><span class="gain">+${fmtH(p.gain)}명 → ${fmtH(cum)}명</span></div>
         <div class="meta">${p.br}</div>
-        <div class="meta">${p.amt>0?`실적 ${won(p.amt)} · 남은 ${won(p.gap)}`:'미체결'} · 전체설계 ${p.cnt}건</div>
+        <div class="meta recline">${rec(p)}<span>${p.amt>0?`실적 ${won(p.amt)} · 남은 ${won(p.gap)}`:'미체결'} · 전체설계 ${p.cnt}건</span></div>
         <div class="calc">${calcLine(p)}</div>
         <div class="meta">진행 설계 ${p.pend}건</div></div>`).join('')}</div>`:''}`;
 }
@@ -489,8 +492,8 @@ function renderTable(){
   tbody.innerHTML=L.map(x=>{const T=TYPES[x.t];const isD=!!done[x.code];
     return `<tr class="${isD?'done':''}">
       <td class="c"><input type="checkbox" id="d_${x.code}" data-c="${x.code}" ${isD?'checked':''} aria-label="${x.ag} 터치완료"></td>
-      <td><span class="pri p${x.pri}">${PN[x.pri]}</span></td>
-      <td><div class="agent">${nameBtn(x)}${bBadge(x)} <span class="tag ${T.cls}">${T.name}</span></div><div class="branch">${x.br}</div></td>
+      <td>${rec(x)}</td>
+      <td><div class="agent">${nameBtn(x)} <span class="tag ${T.cls}">${T.name}</span></div><div class="branch">${x.br}</div></td>
       <td class="r num">${x.amt>0?won(x.amt):'-'}</td>
       <td class="r num ${x.lowGap?'low':''}">${x.amt>0?won(x.gap):'첫 체결'}</td>
       <td class="r num">${x.cnt}</td>
@@ -514,8 +517,8 @@ function agencies(o){
 function agentCard(p){
   const T=TYPES[p.t];const isD=!!done[p.code];
   return `<div class="ac ${isD?'done':''}">
-    <div class="top"><span class="agent">${nameBtn(p)}${bBadge(p)} <span class="tag ${T.cls}">${T.name}</span></span><span class="gain">+${fmtH(p.gain)}명</span></div>
-    <div class="meta"><span class="pri p${p.pri}">${PN[p.pri]}</span> ${p.amt>0?`실적 ${won(p.amt)} · 남은 ${won(p.gap)}`:'미체결'} · 전체설계 ${p.cnt}건</div>
+    <div class="top"><span class="agent">${nameBtn(p)} <span class="tag ${T.cls}">${T.name}</span></span><span class="gain">+${fmtH(p.gain)}명</span></div>
+    <div class="meta recline">${rec(p)}<span>${p.amt>0?`실적 ${won(p.amt)} · 남은 ${won(p.gap)}`:'미체결'} · 전체설계 ${p.cnt}건</span></div>
     <div class="calc">${calcLine(p)}</div>
     <div class="top"><span class="meta">진행 설계 ${p.pend}건</span><label><input type="checkbox" data-c="${p.code}" ${isD?'checked':''}> 터치완료</label></div>
   </div>`;
@@ -559,6 +562,7 @@ function renderAll(){C=compute();NAV.length=0;
 // ---- 설계 목록 확장 패널 ----
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nameBtn=p=>`<button type="button" class="agname" data-c="${esc(p.code)}" aria-expanded="false">${esc(p.ag)}<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+const rec=p=>`<span class="rec"><span class="pri p${p.pri}">${PN[p.pri]}</span>${p.brg?`<span class="bridge">${esc(p.bt||'브릿지')}</span>`:''}</span>`;
 const bBadge=p=>p.brg?` <span class="bridge">${esc(p.bt||'브릿지')}</span>`:'';
 function designPanel(code){
   const L=(DATA.designs||{})[code]||[];
