@@ -171,6 +171,7 @@ td.num{white-space:nowrap}
 .ac .meta{font-size:13px;color:var(--muted)}
 .ac.done{opacity:.55}
 .ac label{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);cursor:pointer}
+.agq{font:inherit;width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px}
 .maxed{font-size:13px;color:var(--muted);margin:0}
 .agback{justify-self:start}
 .hero .lbl{font-size:13px;opacity:.85}
@@ -391,7 +392,7 @@ function renderHome(){
     </button>`}).join('');
   mgrs.querySelectorAll('.mc').forEach(b=>b.onclick=()=>openMgr(b.dataset.m));
 }
-function openMgr(name){pushNav();sel=name;filt='all';target=null;document.getElementById('q').value='';
+function openMgr(name){pushNav();sel=name;agQ='';filt='all';target=null;document.getElementById('q').value='';
   home.hidden=true;detail.hidden=false;dTitle.textContent=name;renderMgr();window.scrollTo(0,0);}
 function goHome(){detail.hidden=true;home.hidden=false;renderHome();window.scrollTo(0,0);}
 // ---- 화면 이동 기록 (뒤로가기 = 직전 화면) ----
@@ -489,7 +490,7 @@ function renderTable(){
   tbody.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{
     if(c.checked)done[c.dataset.c]=1;else delete done[c.dataset.c];store.set('touchDone',done);renderTable();renderPlan()});
 }
-let view='A', agSel=null;
+let view='A', agSel=null, agQ='';
 function setView(v){view=v;agSel=null;tabA.setAttribute('aria-selected',v==='A');tabB.setAttribute('aria-selected',v==='B');
   viewA.hidden=v!=='A';viewB.hidden=v!=='B';if(v==='B')renderAgencies();}
 tabA.onclick=()=>{if(view!=='A'||agSel){pushNav();setView('A')}}; tabB.onclick=()=>{if(view!=='B'){pushNav();setView('B')}};
@@ -522,13 +523,19 @@ function renderAgencies(){
     viewB.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{if(c.checked)done[c.dataset.c]=1;else delete done[c.dataset.c];store.set('touchDone',done);renderAgencies();renderPlan();renderTable()});
     return;
   }
-  viewB.innerHTML=`<div class="sec-head"><h2>대리점 ${A.length}곳</h2><span>최우선 많은 순</span></div>
+  viewB.innerHTML=`<div class="sec-head"><h2 id="agCount">대리점 ${A.length}곳</h2><span>최우선 많은 순</span></div>
+    <input type="search" id="agq" class="agq" placeholder="대리점 검색" value="${esc(agQ)}" aria-label="대리점 검색">
+    <p class="maxed" id="agNone" hidden>검색한 대리점이 없어요.</p>
     <div class="ags">${A.map(g=>`<button class="ag" type="button" data-g="${g.name.replace(/"/g,'&quot;')}">
       <span class="an">${g.name}</span>
       <span class="ah"><small class="pre">현재 환산인원</small>${fmtH(g.h)}<small>명</small></span>
       <span class="am">설계의뢰 <b>${g.n}</b>명 · 유실적 <b>${g.act}</b>명<br>최우선 <b>${g.top}</b>명 · 미체결 <b>${g.unc}</b>명</span>
       <span class="ap">${g.cands.length?`1건씩 체결 시 +${fmtH(g.gain)}명`:'추가 대상 없음'}</span>
     </button>`).join('')}</div>`;
+  const applyAgQ=()=>{const q=agQ.trim().replace(/\s/g,'');let n=0;
+    viewB.querySelectorAll('.ag').forEach(c=>{const hit=!q||c.dataset.g.replace(/\s/g,'').includes(q);c.hidden=!hit;if(hit)n++});
+    agCount.textContent=q?`대리점 ${n}곳 / ${A.length}곳`:`대리점 ${A.length}곳`;agNone.hidden=n>0;};
+  agq.oninput=()=>{agQ=agq.value;applyAgQ()}; applyAgQ();
   viewB.querySelectorAll('.ag').forEach(b=>b.onclick=()=>{pushNav();agSel=b.dataset.g;renderAgencies();window.scrollTo(0,0)});
 }
 function renderMgr(){renderSummary();renderPlan();renderChips();renderTable();setView('A')}
