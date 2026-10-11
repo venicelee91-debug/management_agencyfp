@@ -14,8 +14,8 @@
 /* Layout: left rail of managers (stacks on phone), right = selected manager's tier ladder, best plan for the chosen target, then full 근접자 worklist */
 :root{
   --bg:#f3f4f7; --surface:#ffffff; --ink:#151a2d; --muted:#5d6479; --line:#dde0e8;
-  --accent:#2f4bd8; --accent-soft:#e6eafc;
-  --b0:#8a5a00; --b0s:#fbefd6; --b1:#0f7a5f; --b1s:#dcf3ea; --b2:#1d5fb3; --b2s:#dde9f8; --b3:#8a2fb0; --b3s:#f1e2f8; --b4:#4e5568; --b4s:#eceef3;
+  --accent:#1c3264; --accent-soft:#e2e7f1;
+  --b0:#8a5a00; --b0s:#fbefd6; --b1:#0f7a5f; --b1s:#dcf3ea; --b2:#1c3264; --b2s:#e2e7f1; --b3:#8a2fb0; --b3s:#f1e2f8; --b4:#4e5568; --b4s:#eceef3;
   --hot:#c2410c; --hots:#ffedd5;
   --done:#9aa0b0;
   --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
@@ -23,14 +23,14 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f1220; --surface:#181c2e; --ink:#e8eaf3; --muted:#9aa1b8; --line:#2b3048;
-  --accent:#8fa2ff; --accent-soft:#232a4d;
-  --b0:#f0bf5c; --b0s:#3a2e14; --b1:#5fd3ad; --b1s:#143329; --b2:#7fb3f5; --b2s:#16283f; --b3:#d39af0; --b3s:#33193f; --b4:#aeb4c6; --b4s:#262a3c;
+  --accent:#9db0d8; --accent-soft:#1f2a44;
+  --b0:#f0bf5c; --b0s:#3a2e14; --b1:#5fd3ad; --b1s:#143329; --b2:#9db0d8; --b2s:#1f2a44; --b3:#d39af0; --b3s:#33193f; --b4:#aeb4c6; --b4s:#262a3c;
   --hot:#ffb27a; --hots:#3d2312;
   --done:#5c6278; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1220; --surface:#181c2e; --ink:#e8eaf3; --muted:#9aa1b8; --line:#2b3048;
-  --accent:#8fa2ff; --accent-soft:#232a4d;
-  --b0:#f0bf5c; --b0s:#3a2e14; --b1:#5fd3ad; --b1s:#143329; --b2:#7fb3f5; --b2s:#16283f; --b3:#d39af0; --b3s:#33193f; --b4:#aeb4c6; --b4s:#262a3c;
+  --accent:#9db0d8; --accent-soft:#1f2a44;
+  --b0:#f0bf5c; --b0s:#3a2e14; --b1:#5fd3ad; --b1s:#143329; --b2:#9db0d8; --b2s:#1f2a44; --b3:#d39af0; --b3s:#33193f; --b4:#aeb4c6; --b4s:#262a3c;
   --hot:#ffb27a; --hots:#3d2312;
   --done:#5c6278; color-scheme:dark}
 *{box-sizing:border-box}
@@ -148,6 +148,30 @@ td.num{white-space:nowrap}
 .iconbtn:active{transform:scale(.94)}
 .iconbtn:focus-visible{outline:2px solid var(--accent)}
 .hero{background:var(--hero) url(data:image/png;base64,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) repeat;color:var(--hero-ink);border-radius:20px;padding:18px;display:grid;gap:12px;box-shadow:0 8px 24px rgba(28,50,100,.25)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px}
+.tab{all:unset;box-sizing:border-box;text-align:center;padding:10px;border-radius:10px;font-weight:700;font-size:15px;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--hero);color:#fff}
+.tab:focus-visible{outline:2px solid var(--accent)}
+.ags{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+@media (max-width:640px){.ags{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ag{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0;transition:transform .12s}
+.ag:active{transform:scale(.97)}
+.ag:hover{border-color:var(--accent)}
+.ag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ag .an{font-weight:700;font-size:15px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
+.ag .ah{font-family:var(--f-num);font-size:24px;font-weight:700;line-height:1.1}
+.ag .ah small{font-size:13px;font-weight:500;color:var(--muted);margin-left:2px}
+.ag .am{font-size:12.5px;color:var(--muted);line-height:1.5}
+.ag .am b{color:var(--ink);font-family:var(--f-num)}
+.ag .ap{margin-top:auto;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:10px;padding:5px 8px}
+.aglist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.ac{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:4px;background:var(--surface)}
+.ac .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.ac .meta{font-size:13px;color:var(--muted)}
+.ac.done{opacity:.55}
+.ac label{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);cursor:pointer}
+.maxed{font-size:13px;color:var(--muted);margin:0}
+.agback{justify-self:start}
 .hero .lbl{font-size:13px;opacity:.85}
 .hero .big{font-family:var(--f-num);font-size:40px;font-weight:700;line-height:1}
 .hero .big small{font-size:18px;font-weight:500;margin-left:2px}
@@ -155,10 +179,10 @@ td.num{white-space:nowrap}
 .hero .st{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 10px;display:grid}
 .hero .st span{font-size:12px;opacity:.85}
 .hero .st b{font-family:var(--f-num);font-size:18px}
-.crit{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
-.crit::-webkit-scrollbar{display:none}
-.crit span{flex:none;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted)}
+.crit{display:grid;grid-template-columns:repeat(4,minmax(0,max-content));justify-content:center;gap:6px}
+.crit span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12.5px;color:var(--muted);text-align:center;white-space:nowrap}
 .crit b{color:var(--ink);font-family:var(--f-num)}
+@media (max-width:400px){.crit{gap:4px}.crit span{padding:5px 7px;font-size:12px}}
 .sec-head{display:flex;justify-content:space-between;align-items:baseline}
 .sec-head h2{margin:0;font-size:17px}
 .sec-head span{font-size:12.5px;color:var(--muted)}
@@ -205,7 +229,7 @@ td.num{white-space:nowrap}
     </header>
     <p class="status" id="stat" hidden></p>
     <section class="hero" id="hero"></section>
-    <div class="crit" aria-label="환산 기준"><span>5만↓ <b>0.5</b></span><span>5~10만 <b>1</b></span><span>10~20만 <b>1.5</b></span><span>20만↑ <b>2명</b></span></div>
+    <div class="crit" aria-label="환산 기준"><span>5만↓ <b>0.5명</b></span><span>5~10만 <b>1명</b></span><span>10~20만 <b>1.5명</b></span><span>20만↑ <b>2명</b></span></div>
     <div class="sec-head"><h2>매니저</h2><span>환산인원 순</span></div>
     <div class="mgrs" id="mgrs"></div>
   </section>
@@ -219,22 +243,29 @@ td.num{white-space:nowrap}
       <span style="width:40px"></span>
     </header>
     <section class="card" id="summary"></section>
-    <section class="card" id="plan"></section>
-    <section class="card">
-      <h3>전체 터치 대상</h3>
-      <div class="toolbar">
-        <div class="toolbar" id="chips"></div>
-        <input type="search" id="q" placeholder="설계사·지사 검색">
-        <label class="chk"><input type="checkbox" id="hideDone"> 터치완료 숨기기</label>
-      </div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th class="c">터치</th><th>추천</th><th>설계사</th><th class="r">현재 실적</th><th class="r">남은 금액</th><th class="r">설계건수</th><th class="r">건당 보험료</th><th class="r">체결 시</th><th>코멘트</th></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-      <p class="foot">추천은 1건 체결 시 늘어나는 환산인원, 남은 금액(2만원 미만은 낮게), 진행 설계 수를 함께 봐요. 건당 보험료·진행 설계는 설계지원건별 시트에서 중복여부(AH열)가 1인 인보험 설계만 사용해요. 터치 체크는 이 브라우저에만 저장돼요.</p>
-    </section>
+    <div class="tabs" role="tablist" aria-label="보기 기준">
+      <button class="tab" role="tab" id="tabA" type="button" aria-selected="true">설계사 기준</button>
+      <button class="tab" role="tab" id="tabB" type="button" aria-selected="false">대리점 기준</button>
+    </div>
+    <div id="viewA" class="single">
+      <section class="card" id="plan"></section>
+      <section class="card">
+        <h3>전체 터치 대상</h3>
+        <div class="toolbar">
+          <div class="toolbar" id="chips"></div>
+          <input type="search" id="q" placeholder="설계사·지사 검색">
+          <label class="chk"><input type="checkbox" id="hideDone"> 터치완료 숨기기</label>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th class="c">터치</th><th>추천</th><th>설계사</th><th class="r">현재 실적</th><th class="r">남은 금액</th><th class="r">설계건수</th><th class="r">건당 보험료</th><th class="r">체결 시</th><th>코멘트</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <p class="foot">추천은 1건 체결 시 늘어나는 환산인원, 남은 금액(2만원 미만은 낮게), 진행 설계 수를 함께 봐요. 건당 보험료·진행 설계는 설계지원건별 시트에서 중복여부(AH열)가 1인 인보험 설계만 사용해요. 터치 체크는 이 브라우저에만 저장돼요.</p>
+      </section>
+    </div>
+    <div id="viewB" class="single" hidden></div>
   </section>
 </div>
 
@@ -298,8 +329,9 @@ function compute(){
   const tiers=[...DATA.tiers].sort((a,b)=>a.h-b.h);
   const by={};
   activeRows().forEach(([m,br,ag,code,amt,hc,cnt,avgP,pend])=>{
-    (by[m]??={name:m,h:0,people:0,cands:[]});
+    (by[m]??={name:m,h:0,people:0,cands:[],all:[]});
     const o=by[m]; const c=conv(amt); o.h+=c; if(c>0)o.people++;
+    o.all.push({br,ag,amt});
     const cd=candidate(m,br,ag,code,amt,cnt,avgP||0,pend||0); if(cd) o.cands.push(cd);
   });
   Object.values(by).forEach(o=>{
@@ -417,7 +449,49 @@ function renderTable(){
   tbody.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{
     if(c.checked)done[c.dataset.c]=1;else delete done[c.dataset.c];store.set('touchDone',done);renderTable();renderPlan()});
 }
-function renderMgr(){renderSummary();renderPlan();renderChips();renderTable()}
+let view='A', agSel=null;
+function setView(v){view=v;agSel=null;tabA.setAttribute('aria-selected',v==='A');tabB.setAttribute('aria-selected',v==='B');
+  viewA.hidden=v!=='A';viewB.hidden=v!=='B';if(v==='B')renderAgencies();}
+tabA.onclick=()=>setView('A'); tabB.onclick=()=>setView('B');
+function agencies(o){
+  const map={};
+  o.all.forEach(a=>{const g=(map[a.br]??={name:a.br||'(지사 미상)',h:0,n:0,act:0,cands:[],maxed:[]});g.n++;g.h+=conv(a.amt);if(a.amt>0)g.act++;if(a.amt>=200000)g.maxed.push(a.ag)});
+  o.cands.forEach(c=>map[c.br].cands.push(c));
+  return Object.values(map).map(g=>({...g,gain:g.cands.reduce((s,c)=>s+c.gain,0),top:g.cands.filter(c=>c.pri===1).length,unc:g.cands.filter(c=>c.t===0).length,best:g.cands.reduce((s,c)=>s+c.score,0)}))
+    .sort((a,b)=>b.top-a.top||b.best-a.best);
+}
+function agentCard(p){
+  const T=TYPES[p.t];const isD=!!done[p.code];
+  return `<div class="ac ${isD?'done':''}">
+    <div class="top"><span class="agent">${p.ag} <span class="tag ${T.cls}">${T.name}</span></span><span class="gain">+${fmtH(p.gain)}명</span></div>
+    <div class="meta"><span class="pri p${p.pri}">${PN[p.pri]}</span> ${p.amt>0?`실적 ${won(p.amt)} · 남은 ${won(p.gap)}`:'미체결'} · 설계 ${p.cnt}건</div>
+    <div class="calc">${calcLine(p)}</div>
+    <div class="top"><span class="meta">진행 설계 ${p.pend}건</span><label><input type="checkbox" data-c="${p.code}" ${isD?'checked':''}> 터치완료</label></div>
+  </div>`;
+}
+function renderAgencies(){
+  const o=curM(); const A=agencies(o);
+  if(agSel){
+    const g=A.find(x=>x.name===agSel); if(!g){agSel=null;return renderAgencies();}
+    viewB.innerHTML=`<button class="btn agback" id="agBack" type="button">‹ 대리점 목록</button>
+      <section class="card"><h3>${g.name}</h3>
+      <p class="plan-sum">설계사 ${g.n}명 · 현재 <b>${fmtH(g.h)}명</b> · 전원 1건씩 체결 시 <b>+${fmtH(g.gain)}명</b></p>
+      ${g.cands.length?`<div class="aglist">${g.cands.map(agentCard).join('')}</div>`:'<p class="maxed">추가로 올릴 수 있는 설계사가 없어요.</p>'}
+      ${g.maxed.length?`<p class="maxed">20만 이상 달성: ${g.maxed.join(', ')}</p>`:''}</section>`;
+    agBack.onclick=()=>{agSel=null;renderAgencies();window.scrollTo(0,0)};
+    viewB.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{if(c.checked)done[c.dataset.c]=1;else delete done[c.dataset.c];store.set('touchDone',done);renderAgencies();renderPlan();renderTable()});
+    return;
+  }
+  viewB.innerHTML=`<div class="sec-head"><h2>대리점 ${A.length}곳</h2><span>최우선 많은 순</span></div>
+    <div class="ags">${A.map(g=>`<button class="ag" type="button" data-g="${g.name.replace(/"/g,'&quot;')}">
+      <span class="an">${g.name}</span>
+      <span class="ah">${fmtH(g.h)}<small>명</small></span>
+      <span class="am">설계사 <b>${g.n}</b>명 · 유실적 <b>${g.act}</b>명<br>최우선 <b>${g.top}</b>명 · 미체결 <b>${g.unc}</b>명</span>
+      <span class="ap">${g.cands.length?`1건씩 체결 시 +${fmtH(g.gain)}명`:'추가 대상 없음'}</span>
+    </button>`).join('')}</div>`;
+  viewB.querySelectorAll('.ag').forEach(b=>b.onclick=()=>{agSel=b.dataset.g;renderAgencies();window.scrollTo(0,0)});
+}
+function renderMgr(){renderSummary();renderPlan();renderChips();renderTable();setView('A')}
 function renderAll(){C=compute();
   if(!C.mgrs.length){detail.hidden=true;home.hidden=false;mgrs.innerHTML='<p class="plan-sum">상단 <b>새 실적파일 불러오기</b>로 실적 엑셀을 열어 주세요.</p>';
     srcInfo.textContent='실적파일을 불러와 주세요';return}
