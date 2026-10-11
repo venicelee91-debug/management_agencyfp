@@ -171,6 +171,11 @@ td.num{white-space:nowrap}
 .ac .meta{font-size:13px;color:var(--muted)}
 .ac.done{opacity:.55}
 .ac label{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);cursor:pointer}
+.nowbox{display:grid;gap:6px;background:var(--bg);border-radius:10px;padding:10px 12px}
+.nowlbl{font-size:12.5px;color:var(--muted)}
+.nowchips{display:flex;flex-wrap:wrap;gap:6px}
+.nowchip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13.5px}
+.nowchip b{font-family:var(--f-num);color:var(--accent)}
 .agq{font:inherit;width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px}
 .maxed{font-size:13px;color:var(--muted);margin:0}
 .agback{justify-self:start}
@@ -496,7 +501,7 @@ function setView(v){view=v;agSel=null;tabA.setAttribute('aria-selected',v==='A')
 tabA.onclick=()=>{if(view!=='A'||agSel){pushNav();setView('A')}}; tabB.onclick=()=>{if(view!=='B'){pushNav();setView('B')}};
 function agencies(o){
   const map={};
-  o.all.forEach(a=>{const g=(map[a.br]??={name:a.br||'(지사 미상)',h:0,n:0,act:0,cands:[],maxed:[]});g.n++;g.h+=conv(a.amt);if(a.amt>0)g.act++;if(a.amt>=200000)g.maxed.push(a.ag)});
+  o.all.forEach(a=>{const g=(map[a.br]??={name:a.br||'(지사 미상)',h:0,n:0,act:0,cands:[],maxed:[],now:[]});g.n++;g.h+=conv(a.amt);if(a.amt>0){g.act++;g.now.push(a)}if(a.amt>=200000)g.maxed.push(a.ag)});
   o.cands.forEach(c=>map[c.br].cands.push(c));
   return Object.values(map).map(g=>({...g,gain:g.cands.reduce((s,c)=>s+c.gain,0),top:g.cands.filter(c=>c.pri===1).length,unc:g.cands.filter(c=>c.t===0).length,best:g.cands.reduce((s,c)=>s+c.score,0)}))
     .sort((a,b)=>b.top-a.top||b.best-a.best);
@@ -516,6 +521,7 @@ function renderAgencies(){
     const g=A.find(x=>x.name===agSel); if(!g){agSel=null;return renderAgencies();}
     viewB.innerHTML=`<button class="btn agback" id="agBack" type="button">‹ 대리점 목록</button>
       <section class="card"><h3>${g.name}</h3>
+      <div class="nowbox"><span class="nowlbl">현재 환산인원 현황</span>${g.now.length?`<div class="nowchips">${[...g.now].sort((x,y)=>conv(y.amt)-conv(x.amt)||y.amt-x.amt).map(a=>`<span class="nowchip">${esc(a.ag)} <b>${fmtH(conv(a.amt))}명</b></span>`).join('')}</div>`:'<span class="maxed">아직 실적이 있는 설계사가 없어요.</span>'}</div>
       <p class="plan-sum">설계의뢰 ${g.n}명 · 현재 <b>${fmtH(g.h)}명</b> · 전원 1건씩 체결 시 <b>+${fmtH(g.gain)}명</b></p>
       ${g.cands.length?`<div class="aglist">${g.cands.map(agentCard).join('')}</div>`:'<p class="maxed">추가로 올릴 수 있는 설계사가 없어요.</p>'}
       ${g.maxed.length?`<p class="maxed">20만 이상 달성: ${g.maxed.join(', ')}</p>`:''}</section>`;
