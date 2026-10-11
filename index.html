@@ -185,9 +185,9 @@ td.num{white-space:nowrap}
 #viewA th{text-align:center}
 .hist{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
 .hist b{color:var(--hot)}
-.spark{display:inline-flex;align-items:flex-end;gap:2px;height:16px;width:40px}
-.spark i{flex:1;background:var(--line);border-radius:1px;min-height:2px}
-.spark i.on{background:var(--accent)}
+.dots{display:inline-flex;gap:2px;align-items:center}
+.dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--accent);box-sizing:border-box;opacity:.45}
+.dots i.on{background:var(--accent);opacity:1}
 .agq{font:inherit;width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px}
 .maxed{font-size:13px;color:var(--muted);margin:0}
 .agback{justify-self:start}
@@ -370,8 +370,8 @@ function candidate(m,br,ag,code,amt,cnt,avgP,pend,brg,bt,hist){
 }
 const man=n=>`${(n/10000).toFixed(1).replace(/\.0$/,'')}만`;
 const histLine=p=>{const h=p.hi; if(!h) return '<span class="hist">과거 실적 정보 없음</span>';
-  const mx=Math.max(...h.H,1);const bars=h.H.map((v,i)=>`<i title="${(DATA.hmon||[])[i]||''} ${man(v)}" style="height:${Math.max(8,v/mx*100)}%" class="${v>0?'on':''}"></i>`).join('');
-  return `<span class="hist"><span class="spark" aria-hidden="true">${bars}</span>평소 ${h.typical?man(h.typical):'-'} · 실적 ${h.n}/${h.of}개월${h.rebound?' · <b>회복 기대</b>':''}</span>`;};
+  const dots=h.H.map((v,i)=>`<i class="${v>0?'on':''}" title="${(DATA.hmon||[])[i]||''} ${v>0?man(v):'실적 없음'}"></i>`).join('');
+  return `<span class="hist">평소 ${h.typical?man(h.typical):'-'} · 참여 <span class="dots" role="img" aria-label="최근 ${h.of}개월 중 ${h.n}개월 실적">${dots}</span>${h.rebound?' · <b>회복 기대</b>':''}</span>`;};
 function calcLine(p){
   const add=p.avgP&&p.P===p.avgP?`<mark class="hl">건당 ${man(p.P)}</mark>`:`<mark class="hl">${man(p.P)}</mark>`;
   return p.amt>0
