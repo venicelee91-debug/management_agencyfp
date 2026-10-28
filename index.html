@@ -221,6 +221,21 @@ td.num{white-space:nowrap}
 .tel:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;user-select:text}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+.entries{display:grid;gap:12px}
+.entry{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px 18px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;transition:transform .12s}
+.entry:active{transform:scale(.98)} .entry:hover{border-color:var(--accent)}
+.entry:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.entry .en-t{font-size:19px;font-weight:700}
+.entry .en-d{grid-column:1;font-size:13px;color:var(--muted)}
+.entry svg{grid-column:2;grid-row:1/3;color:var(--muted)}
+.alltabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.alltabs::-webkit-scrollbar{display:none}
+.alltabs .chip{flex:none}
+.grp-h{font-weight:700;font-size:15px;margin-top:6px;padding:6px 2px;border-bottom:2px solid var(--line)}
+.grp-h span{font-weight:500;color:var(--muted);font-size:13px;margin-left:4px}
+.ac.al{gap:3px}
+.contb{font-size:11.5px;color:var(--b1);background:var(--b1s);border-radius:5px;padding:0 6px;margin-left:4px}
+.btn.more{justify-self:center;margin-top:6px}
 .agq{font:inherit;width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px}
 .maxed{font-size:13px;color:var(--muted);margin:0}
 .agback{justify-self:start}
@@ -293,7 +308,7 @@ tr.exp td{background:var(--bg);padding:0 10px 10px}
 </head>
 <body>
 <div class="wrap">
-  <section id="home" class="single">
+  <section id="landing" class="single">
     <header class="appbar">
       <div class="appbar-title">
         <h1>환산인원관리</h1>
@@ -305,6 +320,19 @@ tr.exp td{background:var(--bg);padding:0 10px 10px}
       </button>
     </header>
     <p class="status" id="stat" hidden></p>
+    <section class="hero" id="lhero"></section>
+    <div class="entries">
+      <button class="entry" id="entryMgr" type="button"><span class="en-t">매니저별 보기</span><span class="en-d" id="enMgrD"></span><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="entry" id="entryAll" type="button"><span class="en-t">전체 설계사 보기</span><span class="en-d" id="enAllD"></span><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </section>
+
+  <section id="home" class="single" hidden>
+    <header class="appbar">
+      <button class="iconbtn" id="homeBack" type="button" aria-label="처음 화면으로"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="appbar-title"><h1>매니저별 보기</h1></div>
+      <span style="width:40px"></span>
+    </header>
     <section class="hero" id="hero"></section>
     <div class="crit" aria-label="환산 기준"><span>5만↓ <b>0.5명</b></span><span>5~10만 <b>1명</b></span><span>10~20만 <b>1.5명</b></span><span>20만↑ <b>2명</b></span></div>
     <div class="sec-head"><h2>매니저</h2><span>환산인원 순</span></div>
@@ -313,6 +341,18 @@ tr.exp td{background:var(--bg);padding:0 10px 10px}
       <div class="sec-head"><h2>일별 히스토리</h2><span>매니저를 누르면 그날 구간 상승자</span></div>
       <div class="tbl-wrap"><table class="htbl"><thead id="histHead"></thead><tbody id="histBody"></tbody></table></div>
     </section>
+  </section>
+
+  <section id="allv" class="single" hidden>
+    <header class="appbar">
+      <button class="iconbtn" id="allBack" type="button" aria-label="처음 화면으로"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="appbar-title"><h1>전체 설계사 보기</h1></div>
+      <span style="width:40px"></span>
+    </header>
+    <div class="alltabs" id="allTabs" role="tablist" aria-label="조회 기준"></div>
+    <input type="search" id="allq" class="agq" placeholder="설계사·지사·매니저 검색" aria-label="설계사 검색">
+    <p class="note">정렬: 3분기(7~9월) 인보험 연속참여 → 3분기 합계실적 순 · 그룹: 20만 미달 → 5만 미달 → 미참여</p>
+    <div id="allList" class="single"></div>
   </section>
 
   <section id="detail" class="single" hidden>
@@ -465,8 +505,13 @@ function renderHome(){
   mgrs.querySelectorAll('.mc').forEach(b=>b.onclick=()=>openMgr(b.dataset.m));
 }
 function openMgr(name){pushNav();sel=name;agQ='';filt='all';target=null;document.getElementById('q').value='';
-  home.hidden=true;detail.hidden=false;dTitle.textContent=name;renderMgr();window.scrollTo(0,0);}
-function goHome(){detail.hidden=true;home.hidden=false;renderHome();renderHistory();window.scrollTo(0,0);}
+  showScr('mgr');dTitle.textContent=name;renderMgr();window.scrollTo(0,0);}
+const SCR={landing:()=>landing,home:()=>home,all:()=>allv,mgr:()=>detail};
+let scr='landing';
+function showScr(s){scr=s;Object.entries(SCR).forEach(([k,f])=>{f().hidden=k!==s});}
+function goHome(){showScr('home');renderHome();renderHistory();window.scrollTo(0,0);}
+function goLanding(){showScr('landing');renderLanding();window.scrollTo(0,0);}
+function goAll(){showScr('all');renderAllv();window.scrollTo(0,0);}
 // ---- 일별 히스토리 ----
 const todayStr=()=>{const d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10)};
 const asof=()=>DATA.asof||todayStr();
@@ -507,25 +552,72 @@ function renderHistory(){
   histBody.innerHTML=html;
   histBody.querySelectorAll('.hbtn').forEach(bt=>bt.onclick=()=>{const n=bt.dataset.m;histOpen.has(n)?histOpen.delete(n):histOpen.add(n);renderHistory();});
 }
+// ---- 처음 화면 / 전체 설계사 보기 ----
+let allTab='all', allQ='', allShown=40;
+function allAgents(){
+  const map={};
+  C.mgrs.forEach(o=>o.cands.forEach(c=>{const k=c.code; if(!map[k]||c.amt>map[k].amt) map[k]=c;}));
+  const hm=DATA.hmon||[]; let qi=['7월','8월','9월'].map(m=>hm.indexOf(m)); if(qi.some(i=>i<0)){const n=hm.length;qi=[n-3,n-2,n-1].filter(i=>i>=0);}
+  return Object.values(map).map(c=>{const H=c.hi?c.hi.H:null; const q=H?qi.map(i=>H[i]||0):[0,0,0];
+    return {...c,q,cont:q.length===3&&q.every(v=>v>0),qsum:q.reduce((a,v)=>a+v,0),grp:c.amt>=50000?0:c.amt>0?1:2};});
+}
+const ALLTABS=[['all','전체'],['n20','20만 근접'],['n10','10만 근접'],['n5','5만 근접'],['unc','미체결']];
+const tabHit={all:()=>true,n20:x=>x.t===3,n10:x=>x.t===2,n5:x=>x.t===1,unc:x=>x.t===0};
+const GRP=['20만 미달','5만 미달','미참여'];
+function renderLanding(){
+  const total=C.mgrs.reduce((s,o)=>s+o.h,0); const A=allAgents();
+  lhero.innerHTML=`<div class="lbl">지점 유실적 환산인원</div><div class="big">${fmtH(total)}<small>명</small>${dChip(total,prev()&&prev().total,true)}</div>`;
+  const top=C.mgrs.reduce((s,o)=>s+o.cands.filter(c=>c.pri===1).length,0);
+  enMgrD.textContent=`매니저 ${C.mgrs.length}명 · 최우선 터치 ${top}명`;
+  enAllD.textContent=`20만 근접 ${A.filter(tabHit.n20).length} · 10만 근접 ${A.filter(tabHit.n10).length} · 5만 근접 ${A.filter(tabHit.n5).length} · 미체결 ${A.filter(tabHit.unc).length}`;
+}
+function allCard(x){
+  const hm=DATA.hmon||[]; const ql=['7월','8월','9월'];
+  const dots=x.hi?x.q.map((v,i)=>`<i class="${v>0?'on':''}" title="${ql[i]} ${v>0?man(v):'실적 없음'}"></i>`).join(''):'';
+  return `<div class="ac al" data-n="${esc(x.ag+x.br+x.m)}">
+    <div class="top"><span class="agent">${nameBtn(x)}${bBadge(x)}</span><span class="gain">+${fmtH(x.gain)}명</span></div>
+    <div class="meta">${esc(x.m)} 매니저 · ${esc(x.br)}</div>
+    <div class="meta">${x.amt>0?`현재 <b class="num">${man(x.amt)}</b> · ${x.next/10000}만까지 ${won(x.gap)}`:'미체결'} · 진행 설계 ${x.pend}건</div>
+    <div class="meta q3">${x.hi?`3분기 <span class="dots">${dots}</span>${x.cont?'<b class="contb">연속참여</b>':''} · 합계 ${x.qsum?man(x.qsum):'0'}`:'3분기 실적 정보 없음'}</div>
+  </div>`;
+}
+function renderAllv(){
+  const A=allAgents();
+  allTabs.innerHTML=ALLTABS.map(([k,l])=>`<button type="button" class="chip ${k==='all'?'tall':k==='unc'?'t0':k==='n5'?'t1':k==='n10'?'t2':'t3'}" data-k="${k}" aria-pressed="${allTab===k}">${l} ${A.filter(tabHit[k]).length}</button>`).join('');
+  allTabs.querySelectorAll('.chip').forEach(bt=>bt.onclick=()=>{allTab=bt.dataset.k;allShown=40;renderAllv();});
+  const q=allQ.trim().replace(/\s/g,'');
+  let L=A.filter(tabHit[allTab]).filter(x=>!q||(x.ag+x.br+x.m).replace(/\s/g,'').includes(q));
+  L.sort((a,b)=>a.grp-b.grp||(b.cont-a.cont)||b.qsum-a.qsum||b.amt-a.amt);
+  if(!L.length){allList.innerHTML='<p class="maxed">조건에 맞는 설계사가 없어요.</p>';return}
+  const shown=L.slice(0,allShown); let html='',g=-1;
+  shown.forEach(x=>{ if(x.grp!==g){g=x.grp;html+=`<div class="grp-h">${GRP[g]} <span>${L.filter(y=>y.grp===g).length}명</span></div>`;} html+=allCard(x); });
+  if(L.length>allShown) html+=`<button type="button" class="btn more" id="allMore">더 보기 (${L.length-allShown}명 남음)</button>`;
+  allList.innerHTML=html;
+  if(window.allMore) allMore.onclick=()=>{allShown+=60;renderAllv();};
+}
+allq.oninput=()=>{allQ=allq.value;allShown=40;renderAllv();};
 // ---- 화면 이동 기록 (뒤로가기 = 직전 화면) ----
 const NAV=[]; const STANDALONE=(()=>{try{return window.top===window}catch(e){return false}})();
-const snap=()=>({home:!home.hidden,sel,view,agSel,y:window.scrollY});
+const snap=()=>({scr,sel,view,agSel,allTab,y:window.scrollY});
 let histOK=false;
 function pushNav(){NAV.push(snap());if(STANDALONE){try{history.pushState({n:NAV.length},'');histOK=true}catch(e){histOK=false}}}
 function restore(s){
-  if(s.home){detail.hidden=true;home.hidden=false;renderHome();}
+  if(s.scr==='landing'){showScr('landing');renderLanding();}
+  else if(s.scr==='home'){showScr('home');renderHome();renderHistory();}
+  else if(s.scr==='all'){allTab=s.allTab||'all';showScr('all');renderAllv();}
   else{ if(s.sel!==sel){target=null;filt='all';document.getElementById('q').value='';}
-    sel=s.sel;home.hidden=true;detail.hidden=false;dTitle.textContent=sel;renderMgr();
+    sel=s.sel;showScr('mgr');dTitle.textContent=sel;renderMgr();
     setView(s.view); if(s.agSel){agSel=s.agSel;renderAgencies();} }
   requestAnimationFrame(()=>window.scrollTo(0,s.y||0));
 }
 function navBack(){
-  if(!NAV.length){goHome();return}
+  if(!NAV.length){goLanding();return}
   if(histOK){history.back();return}   // popstate가 직전 화면을 복원
   restore(NAV.pop());
 }
 window.addEventListener('popstate',()=>{const s=NAV.pop();if(s)restore(s);});
-backBtn.onclick=()=>navBack();
+backBtn.onclick=()=>navBack(); homeBack.onclick=()=>navBack(); allBack.onclick=()=>navBack();
+entryMgr.onclick=()=>{pushNav();goHome();}; entryAll.onclick=()=>{pushNav();allTab='all';allQ='';allq.value='';goAll();};
 function renderSummary(){
   const o=curM();
   if(!target||target.h<=o.h) target=o.next;
@@ -660,10 +752,10 @@ function renderAgencies(){
 }
 function renderMgr(){renderSummary();renderPlan();renderChips();renderTable();setView('A')}
 function renderAll(){C=compute();NAV.length=0;
-  if(!C.mgrs.length){detail.hidden=true;home.hidden=false;mgrs.innerHTML='<p class="plan-sum">상단 <b>새 실적파일 불러오기</b>로 실적 엑셀을 열어 주세요.</p>';
+  if(!C.mgrs.length){showScr('home');mgrs.innerHTML='<p class="plan-sum">상단 <b>새 실적파일 불러오기</b>로 실적 엑셀을 열어 주세요.</p>';
     srcInfo.textContent='실적파일을 불러와 주세요';return}
   srcInfo.textContent=`${DATA.src||'업로드 파일'} · 매니저 ${C.mgrs.length}명 · 설계사 ${activeRows().length.toLocaleString()}명`;
-  goHome();}
+  goLanding();}
 
 // ---- 설계 목록 확장 패널 ----
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
